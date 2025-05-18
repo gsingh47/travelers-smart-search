@@ -9,8 +9,6 @@ import { SearchTools } from './search-tools/SearchTools';
 import { ActionType } from '../provider/actions';
 import { Chrome_Cache_Key, RECENT_SEARCHES_LIMIT, RecentSearchesType } from '../types/common';
 import { SearchTypes } from './search-types/SearchTypes';
-import { Visibility } from '@mui/icons-material';
-import DeleteIcon from '@mui/icons-material/Delete';
 
 const DEFAULT_INPUT_PLACEHOLDER = 'E.g. Search hotels in new york.';
 const DEFAULT_INPUT_LABEL = 'Prompt';
