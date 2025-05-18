@@ -1,8 +1,7 @@
 import React from 'react';
-import MicIcon from '@mui/icons-material/Mic';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
-import { Box, Card, CardContent, CardHeader, Fab, IconButton, Popover, Stack, TextField, Typography } from '@mui/material';
+import { Box, Card, CardContent, CardHeader, Fab, FilledInput, FormControl, IconButton, InputAdornment, InputLabel, Popover, Stack, TextField, Typography } from '@mui/material';
 import { getSearchCriteria } from '../utils/speech-to-text';
 import { useVoiceSearchContext } from '../provider/VoiceSearchProvider';
 import { Suggestions } from './suggestions/Suggestions';
@@ -10,7 +9,8 @@ import { SearchTools } from './search-tools/SearchTools';
 import { ActionType } from '../provider/actions';
 import { Chrome_Cache_Key, RECENT_SEARCHES_LIMIT, RecentSearchesType } from '../types/common';
 import { SearchTypes } from './search-types/SearchTypes';
-import { set } from 'zod';
+import { Visibility } from '@mui/icons-material';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const DEFAULT_INPUT_PLACEHOLDER = 'E.g. Search hotels in new york.';
 const DEFAULT_INPUT_LABEL = 'Prompt';
@@ -106,16 +106,23 @@ export const SmartSearch: React.FC = () => {
           <CardContent>
             <Box sx={{ minHeight: 300,  maxHeight: 300 }}>
               <Box sx={{ minHeight: 100, maxHeight: 100, paddingBlockEnd: 2 }}>
-                <TextField label={DEFAULT_INPUT_LABEL} variant="filled" rows={5} placeholder={DEFAULT_INPUT_PLACEHOLDER} fullWidth multiline />
+                <TextField 
+                  label={DEFAULT_INPUT_LABEL} 
+                  variant="filled" 
+                  rows={5} 
+                  placeholder={DEFAULT_INPUT_PLACEHOLDER}
+                  fullWidth 
+                  multiline 
+                />
               </Box>
               {/* Search, reset button */}
               {state.isReady && <SearchTools isContentAvailable={true} />}
               {/* Suggestions */}
-              {state.isReady && <Suggestions isContentAvailable={false} />}
+              {<Suggestions isContentAvailable={false} />}
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-              <Fab onClick={handleSearchClick} size='medium' color={'primary'}>
-                <SearchIcon color='inherit' />
+              <Fab onClick={handleSearchClick} size='medium' color={'primary'} variant='extended'>
+                <Typography sx={{ textTransform: 'none' }} noWrap>Search</Typography>
               </Fab>
             </Box>
           </CardContent>
