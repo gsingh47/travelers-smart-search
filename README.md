@@ -1,4 +1,4 @@
-## Extension manager
+## Travelers Voice Search
 
 ### Available Scripts
 

@@ -1,16 +1,17 @@
 import React from 'react';
 import './App.css';
 import { Box, useMediaQuery } from '@mui/material';
-import { VoiceSearchWrapper } from './components/VoiceSearchWrapper';
 import { useTheme } from '@emotion/react';
+import { ChromeStorageKey } from './background/background';
+import { SmartSearch } from './components/SmartSearch';
 
 const App: React.FC = () => {
   const theme = useTheme();
   const isLargeBreakpoint = useMediaQuery('(min-width:1994px)');
 
   React.useEffect(() => {
-    console.log(isLargeBreakpoint, theme);
-  }, [isLargeBreakpoint, theme]);
+    chrome.storage.local.set({[ChromeStorageKey.INIT]: true});
+  }, []);
 
   return (
     <div>
@@ -18,13 +19,13 @@ const App: React.FC = () => {
         sx={{ 
           zIndex: 99999, 
           position: 'absolute', 
-          left: isLargeBreakpoint ? '80%' : '70.5%', 
+          left: isLargeBreakpoint ? '92%' : '70.5%', 
           top: isLargeBreakpoint ? '0' : '6.5%', 
           minWidth: '20%' 
         }} 
         component={'section'}
       >
-        <VoiceSearchWrapper />
+        <SmartSearch />
       </Box>
     </div>
   );

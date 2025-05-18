@@ -7,7 +7,7 @@ module.exports = {
   entry: {
     contentScript: './src/content/index.tsx',
     background: './src/background/background.ts',
-    react: './src/index.tsx' // TODO: remove if doesn't need
+    react: './src/index.tsx'
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
