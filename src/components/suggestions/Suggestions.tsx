@@ -3,7 +3,6 @@ import { SuggestionsHeader } from './SuggestionsHeader';
 import { Chip } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import HistoryToggleOffIcon from '@mui/icons-material/HistoryToggleOff';
-import { useVoiceSearchContext } from '../../provider/VoiceSearchProvider';
 import { Chrome_Cache_Key, RecentSearchesType } from '../../types/common';
 
 export type Props = {
