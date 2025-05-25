@@ -13,15 +13,18 @@ const App: React.FC = () => {
     chrome.storage.local.set({[ChromeStorageKey.INIT]: true});
   }, []);
 
+  // left: isLargeBreakpoint ? '92%' : '70.5%', 
+  // top: isLargeBreakpoint ? '0' : '6.5%',
+
   return (
     <div>
       <Box 
         sx={{ 
           zIndex: 99999, 
-          position: 'absolute', 
-          left: isLargeBreakpoint ? '92%' : '70.5%', 
-          top: isLargeBreakpoint ? '0' : '6.5%', 
-          minWidth: '20%' 
+          position: 'fixed',
+          left: '85%', 
+          top: '0.2%',
+          minWidth: '100%' 
         }} 
         component={'section'}
       >
