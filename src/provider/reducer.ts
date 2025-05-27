@@ -14,6 +14,12 @@ export type ConnectionClosedType = {
   count: number
 };
 
+export type DestinationSuggestionsType = {
+  primary: string;
+  secondary: string;
+  destType: string;
+};
+
 export type State = {
   transcript?: Transcript;
   isReady: boolean;
@@ -23,6 +29,7 @@ export type State = {
   recorderStatus?: string;
   searchClicked?: boolean;
   isFetching?: boolean;
+  destinationSuggestions?: DestinationSuggestionsType[];
 };
 
 export const initialState: State = {
@@ -73,6 +80,11 @@ export const reducer = (state: State, action: Actions) => {
         ...state,
         isFetching: action.payload
       };
+    case ActionType.SET_DESTINATION_SUGGESTIONS:
+      return {
+        ...state,
+        destinationSuggestions: action.payload
+      }
     default:
       return state;
   }

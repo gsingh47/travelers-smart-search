@@ -44,25 +44,6 @@ const getToken = async () => {
   }
 };
 
-export const getSearchCriteria = async (transcript: string) => {
-  try {
-    const response = await fetch('http://localhost:4000/getSearchCriteria', 
-      {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({text: transcript})
-      }
-    );
-    return await response.json();
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-};
-
 export const startRecording = async (
   dispatchStateUpdate: React.Dispatch<React.SetStateAction<TranscriptComponentState>>,
   dispatch: React.Dispatch<Actions>,

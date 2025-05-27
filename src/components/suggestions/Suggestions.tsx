@@ -1,37 +1,64 @@
 import React from 'react';
-import { SuggestionsHeader } from './SuggestionsHeader';
-import { Chip } from '@mui/material';
+import { Chip, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import PlaceIcon from '@mui/icons-material/Place';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import FlightTakeoffIcon from '@mui/icons-material/FlightTakeoff';
 import HistoryToggleOffIcon from '@mui/icons-material/HistoryToggleOff';
 import { Chrome_Cache_Key, RecentSearchesType } from '../../types/common';
+import { useSmartSearchContext } from '../../provider/SmartSearchProvider';
 
-export type Props = {
-  isContentAvailable: boolean
-};
+export const Suggestions: React.FC = () => {
+  // const [recentSearches] = React.useState<RecentSearchesType[]>();
+  const { state } = useSmartSearchContext();
 
-export const Suggestions: React.FC<Props> = ({ isContentAvailable }) => {
-  const showSuggestion = !isContentAvailable;
-  const [recentSearches, setRecentSearches] = React.useState<RecentSearchesType[]>();
-
-  React.useEffect(() => {
-    (async () => {
-      const resp = await chrome.storage.local.get(Chrome_Cache_Key.RECENT_SEARCHES);
+  // React.useEffect(() => {
+  //   (async () => {
+  //     const resp = await chrome.storage.local.get(Chrome_Cache_Key.RECENT_SEARCHES);
       
-      if (resp && resp.recentSearches) {
-        setRecentSearches(resp.recentSearches);
-      }
-    })();
-  }, [chrome.storage.local.onChanged]);
+  //     if (resp && resp.recentSearches) {
+  //       setRecentSearches(resp.recentSearches);
+  //     }
+  //   })();
+  // }, [chrome.storage.local.onChanged]);
 
-  const handleClick = (index: number) => {
-    const recentSearch = recentSearches[index];
-    console.log(recentSearch);
+  const handleClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, index: number) => {
+    console.log(event.target);
   };
+
+  const listIcon = (destType: string) => {
+    switch (destType) {
+      case 'city':
+      case 'district':
+      case 'region':
+        return <PlaceIcon color='inherit' />;
+      case 'airport':
+        return <FlightTakeoffIcon color='inherit' />;
+      case 'landmark':
+        return <AccountBalanceIcon color='inherit' />;
+      default:
+        return <PlaceIcon color='inherit' />;
+    }
+  }
+
+  const destinationSuggestions = state.destinationSuggestions.map((suggestion, index) => (
+    <ListItemButton 
+      key={`destination-suggestion-item-${index}`}
+      onClick={(event) => handleClick(event, index)}
+    >
+      <ListItemIcon>{listIcon(suggestion.destType)}</ListItemIcon>
+      <ListItemText primary={suggestion.primary.replaceAll(/&amp;/g, '&')} secondary={suggestion.secondary} />
+    </ListItemButton>
+  ))
 
   return (
     <>
-      <SuggestionsHeader isContentAvailable={isContentAvailable} isRecentSearchAvail={!!recentSearches?.length} />
-      {recentSearches?.map((recentSearch, index) => (
+      { 
+        <List component="nav" sx={{ width: '100%', maxHeight: '280px', overflowY: 'auto' }}>
+          {destinationSuggestions}
+        </List>
+      }
+      {/* {recentSearches?.map((recentSearch, index) => (
         <Chip 
           key={`recent-search-${index}`}
           label={recentSearch.title}
@@ -43,8 +70,8 @@ export const Suggestions: React.FC<Props> = ({ isContentAvailable }) => {
             m: 1
           }}
         />
-      ))}
-      {showSuggestion && !recentSearches?.length &&
+      ))} */}
+      {/* {showSuggestion && !recentSearches?.length &&
         <Chip 
           label="Search flights from seattle to LA on december 21st for 2 adults and 1 child, with return date January 13." 
           size="small" 
@@ -59,7 +86,7 @@ export const Suggestions: React.FC<Props> = ({ isContentAvailable }) => {
             m: 1
           }}
         />
-      }
+      } */}
     </>
   );
 };

@@ -2,9 +2,9 @@ import React from 'react';
 import MicIcon from '@mui/icons-material/Mic';
 import CloseIcon from '@mui/icons-material/Close';
 import { Box, Card, CardContent, CardHeader, CircularProgress, Fab, IconButton, Popover, Stack, Typography } from '@mui/material';
-import { getSearchCriteria, pauseRecording, RecorderStatus, resumeRecording, startRecording, stopRecording } from '../utils/speech-to-text';
-import { useVoiceSearchContext } from '../provider/VoiceSearchProvider';
-import { getCardTitleText, getDisplayText } from '../utils/get-data-helper';
+import { pauseRecording, RecorderStatus, resumeRecording, startRecording, stopRecording } from '../utils/speech-to-text';
+import { useSmartSearchContext } from '../provider/SmartSearchProvider';
+import { getCardTitleText, getDisplayText, getSearchCriteria } from '../utils/get-data-helper';
 import { ErrorMsgs } from '../provider/reducer';
 import { Suggestions } from './suggestions/Suggestions';
 import { SearchTools } from './search-tools/SearchTools';
@@ -19,7 +19,7 @@ export type TranscriptComponentState = {
 export const VoiceSearchWrapper: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
   const [paused, setPaused] = React.useState(false);
-  const { state, dispatch } = useVoiceSearchContext();
+  const { state, dispatch } = useSmartSearchContext();
   const [transcriptState, setTranscriptState] = React.useState<TranscriptComponentState>();
   const open = Boolean(anchorEl);
   const isPaused = state.recorderStatus === RecorderStatus.PAUSED && paused;
@@ -141,7 +141,7 @@ export const VoiceSearchWrapper: React.FC = () => {
               {/* Search, reset button */}
               {state.isReady && <SearchTools isContentAvailable={isFinalContentAvailable} />}
               {/* Suggestions */}
-              {state.isReady && <Suggestions isContentAvailable={isContentAvailable} />}
+              {state.isReady && <Suggestions />}
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
               {(!state.isReady && !isPaused) || state.isFetching ? <CircularProgress size={40} /> : (

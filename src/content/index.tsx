@@ -1,7 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from '../App';
-import { VoiceSearchContextProvider } from '../provider/VoiceSearchProvider';
+import { SmartSearchContextProvider } from '../provider/SmartSearchProvider';
 
 const init = () => {
   const container = document.createElement('div');
@@ -13,9 +13,9 @@ const init = () => {
   const root = createRoot(container);
   
   root.render(
-    <VoiceSearchContextProvider>
+    <SmartSearchContextProvider>
       <App />
-    </VoiceSearchContextProvider>
+    </SmartSearchContextProvider>
   );
 };
 

@@ -1,15 +1,16 @@
 import React from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import { Box, Card, CardContent, CardHeader, Fab, IconButton, Popover, Stack, TextField, Typography } from '@mui/material';
-import { getSearchCriteria } from '../utils/speech-to-text';
-import { useVoiceSearchContext } from '../provider/VoiceSearchProvider';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { Box, Card, CardContent, CardHeader, Fab, IconButton, LinearProgress, Popover, Stack, TextField, Typography } from '@mui/material';
+import { useSmartSearchContext } from '../provider/SmartSearchProvider';
 import { Suggestions } from './suggestions/Suggestions';
 import { SearchTools } from './search-tools/SearchTools';
 import { ActionType } from '../provider/actions';
 import { Chrome_Cache_Key, RECENT_SEARCHES_LIMIT, RecentSearchesType } from '../types/common';
 import { SearchTypes } from './search-types/SearchTypes';
 import { runSearch, waitForElementToDisappear } from './utils/bookingcom-runners';
+import { getSearchCriteria } from '../utils/get-data-helper';
 
 const DEFAULT_INPUT_PLACEHOLDER = 'E.g. Search hotels in new york.';
 const DEFAULT_INPUT_LABEL = 'Prompt';
@@ -23,41 +24,9 @@ export type TranscriptComponentState = {
 export const SmartSearch: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
   const [searchText, setSearchText] = React.useState<string>();
-  const { state, dispatch } = useVoiceSearchContext();
-  const { title, titleColor } = { title: undefined, titleColor: undefined };
+  const { state, dispatch } = useSmartSearchContext();
+  const showSuggestions = state.searchClicked && state.destinationSuggestions.length;
   const open = Boolean(anchorEl);
-
-  React.useEffect(() => {
-    if (state.searchClicked) {
-      (async () => {
-        let resp = undefined;
-        if (false) { // TODO: check if search input is ready
-          resp = await getSearchCriteria(""); // TDOD: get the search input
-        }
-
-        if (resp && resp.success && !resp.error) {
-          const cachedResp = await chrome.storage.local.get(Chrome_Cache_Key.RECENT_SEARCHES);
-
-          if (cachedResp && cachedResp.recentSearches) {
-            const recentSearches: RecentSearchesType[] = cachedResp.recentSearches;
-            recentSearches.splice(0, 0, {title: resp.results.searchTitle, url: resp.results.url});
-            const updatedSearches = recentSearches.length > RECENT_SEARCHES_LIMIT ? recentSearches.slice(0, recentSearches.length - 1) : recentSearches;
-            chrome.storage.local.set({[Chrome_Cache_Key.RECENT_SEARCHES]: updatedSearches});
-            
-          } else {
-            chrome.storage.local.set({[Chrome_Cache_Key.RECENT_SEARCHES]: [{title: resp.results.searchTitle, url: resp.results.url}]});
-          }
-          
-          window.location.href = resp.results.url;
-        } else {
-          dispatch({ type: ActionType.ERROR, payload: { message: resp.error }});
-        }
-
-        dispatch({ type: ActionType.FETCHING, payload: false });
-        dispatch({ type: ActionType.SEARCH, payload: false });
-      })();
-    }
-  }, [state.searchClicked]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -71,6 +40,11 @@ export const SmartSearch: React.FC = () => {
     }
   }
 
+  const handleBackClick = () => {
+    dispatch({ type: ActionType.SET_DESTINATION_SUGGESTIONS, payload: [] });
+    dispatch({ type: ActionType.SEARCH, payload: false });
+  }
+
   const handleOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -81,15 +55,30 @@ export const SmartSearch: React.FC = () => {
 
   const handleSearchClick = async () => {
     if (searchText) {
-      setAnchorEl(null);
+      dispatch({ type: ActionType.FETCHING, payload: true });
+      const resp = await getSearchCriteria(searchText);
       
-      waitForElementToDisappear('#smart-search-popover').then((elementDisappeared) => {
-        if (elementDisappeared) {
-          runSearch(searchText);
-        } else {
-          console.error('Popover did not close in time'); // TODO: set error state
+      if (resp && resp.success) {
+        const { destinationSuggestions } = resp.results;
+
+        if (destinationSuggestions && destinationSuggestions.length) {
+          dispatch({
+            type: ActionType.SET_DESTINATION_SUGGESTIONS,
+            payload: destinationSuggestions
+          });
+          dispatch({ type: ActionType.SEARCH, payload: true });
+          dispatch({ type: ActionType.FETCHING, payload: false });
         }
-      });
+        // TODO: Handle unavailable suggestions case
+      }
+
+      // waitForElementToDisappear('#smart-search-popover').then((elementDisappeared) => {
+      //   if (elementDisappeared) {
+      //     runSearch(searchText);
+      //   } else {
+      //     console.error('Popover did not close in time'); // TODO: set error state
+      //   }
+      // });
     }
   };
 
@@ -123,28 +112,34 @@ export const SmartSearch: React.FC = () => {
                 <CloseIcon />
               </IconButton>
             }
-            title={<SearchTypes />}
+            title={showSuggestions ? 
+              <ArrowBackIcon onClick={handleBackClick} color='primary' sx={{ cursor: 'pointer', mt: 0.8 }} /> : 
+              <SearchTypes />
+            }
           />
           <CardContent>
             <Box sx={{ minHeight: 300,  maxHeight: 300 }}>
-              <Box sx={{ minHeight: 100, maxHeight: 100, paddingBlockEnd: 2 }}>
-                <TextField 
-                  label={DEFAULT_INPUT_LABEL} 
-                  variant="filled" 
-                  rows={5} 
-                  placeholder={DEFAULT_INPUT_PLACEHOLDER}
-                  fullWidth 
-                  multiline
-                  value={searchText}
-                  onChange={handleInputChange}
-                  onKeyDown={handleKeyDown}
-                />
-              </Box>
-              {/* Search, reset button */}
-              {state.isReady && <SearchTools isContentAvailable={true} />}
+              {!showSuggestions && 
+                <Box sx={{ minHeight: 100, maxHeight: 100, paddingBlockEnd: 2 }}>
+                  <TextField 
+                    label={DEFAULT_INPUT_LABEL} 
+                    variant="filled" 
+                    rows={5} 
+                    placeholder={DEFAULT_INPUT_PLACEHOLDER}
+                    fullWidth
+                    multiline
+                    value={searchText}
+                    onChange={handleInputChange}
+                    onKeyDown={handleKeyDown}
+                  />
+                  {/* loader */}
+                  {state.isFetching && <LinearProgress />}
+                </Box>
+              }
               {/* Suggestions */}
-              {/* {<Suggestions isContentAvailable={false} />} */}
+              {showSuggestions && <Suggestions />}
             </Box>
+            {/* Search button */}
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
               <Fab onClick={handleSearchClick} size='medium' color={'primary'} variant='extended'>
                 <Typography sx={{ textTransform: 'none' }} noWrap>Search</Typography>

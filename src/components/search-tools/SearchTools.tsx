@@ -2,7 +2,7 @@ import React from 'react';
 import { Stack, Fab } from '@mui/material';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import SearchIcon from '@mui/icons-material/Search';
-import { useVoiceSearchContext } from '../../provider/VoiceSearchProvider';
+import { useSmartSearchContext } from '../../provider/SmartSearchProvider';
 import { ActionType } from '../../provider/actions';
 
 type Props = {
@@ -10,7 +10,7 @@ type Props = {
 };
 
 export const SearchTools: React.FC<Props> = ({ isContentAvailable }) => {
-  const { dispatch } = useVoiceSearchContext();
+  const { dispatch } = useSmartSearchContext();
 
   const handleSearchClick = () => {
     dispatch({ type: ActionType.SEARCH, payload: true });

@@ -6,8 +6,14 @@ export enum ActionType {
   ERROR = 'ERROR',
   RECORDER_STATE_CHANGE = 'RECORDER_STATUS_CHANGE',
   SEARCH = 'SEARCH',
-  FETCHING = 'FETCHING'
+  FETCHING = 'FETCHING',
+  SET_DESTINATION_SUGGESTIONS = 'SHOW_DESTINATION_SUGGESTIONS'
 };
+
+export type OnSetDestinationSuggestionsAction = {
+  type: ActionType.SET_DESTINATION_SUGGESTIONS;
+  payload: any;
+}
 
 export type OnConnectedAction = {
   type: ActionType.CONNECTED;
@@ -40,4 +46,4 @@ export type OnFetchAction = {
 };
 
 export type Actions =  OnErrorAction | OnConnectedAction | OnDisConnectedAction | OnRecorderStateChangeAction |
-  OnSearchAction | OnFetchAction;
+  OnSearchAction | OnFetchAction | OnSetDestinationSuggestionsAction;
