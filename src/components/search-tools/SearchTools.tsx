@@ -13,7 +13,7 @@ export const SearchTools: React.FC<Props> = ({ isContentAvailable }) => {
   const { dispatch } = useSmartSearchContext();
 
   const handleSearchClick = () => {
-    dispatch({ type: ActionType.SEARCH, payload: true });
+    dispatch({ type: ActionType.SEARCH, payload: { searchClicked: true } });
     dispatch({ type: ActionType.FETCHING, payload: true });
   };
 

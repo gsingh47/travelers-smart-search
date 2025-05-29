@@ -39,7 +39,7 @@ export const runDestinationSearch = async (searchText: string) => {
   destinationInput.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
-export const runSearch = async (searchText: string) => {
+export const runSearch = async (searchText: string, selectedDestIndex: number = 0) => {
   runDestinationSearch(searchText);
 
   const optionsParent = await waitForElement(DESTINATION_AUTO_COMPLETE_PARENT_SELECTOR) as HTMLElement;
@@ -48,8 +48,8 @@ export const runSearch = async (searchText: string) => {
     const autoCompleteOptions = optionsParent.querySelectorAll(DESTINATION_AUTO_COMPLETE_SELECTOR) as NodeListOf<HTMLDivElement>;
 
     if (autoCompleteOptions && autoCompleteOptions.length > 0) {
-      const optionOne = autoCompleteOptions[0];
-      optionOne.click();
+      const selectedDestOption = autoCompleteOptions[selectedDestIndex];
+      selectedDestOption.click();
 
       const destinationInput = await waitForElement(DESTINATION_INPUT_SELECTOR) as HTMLInputElement;
       const isAutoCompleteClosed = destinationInput.getAttribute('aria-expanded');

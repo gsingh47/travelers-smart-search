@@ -7,13 +7,13 @@ export enum ActionType {
   RECORDER_STATE_CHANGE = 'RECORDER_STATUS_CHANGE',
   SEARCH = 'SEARCH',
   FETCHING = 'FETCHING',
-  SET_DESTINATION_SUGGESTIONS = 'SHOW_DESTINATION_SUGGESTIONS'
+  SET_DESTINATION_SUGGESTIONS = 'SHOW_DESTINATION_SUGGESTIONS',
 };
 
 export type OnSetDestinationSuggestionsAction = {
   type: ActionType.SET_DESTINATION_SUGGESTIONS;
   payload: any;
-}
+};
 
 export type OnConnectedAction = {
   type: ActionType.CONNECTED;
@@ -37,7 +37,10 @@ export type OnRecorderStateChangeAction = {
 
 export type OnSearchAction = {
   type: ActionType.SEARCH;
-  payload: boolean;
+  payload: {
+    searchClicked: boolean;
+    searchText?: string;
+  };
 };
 
 export type OnFetchAction = {

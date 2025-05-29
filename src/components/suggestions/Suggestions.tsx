@@ -8,9 +8,14 @@ import HistoryToggleOffIcon from '@mui/icons-material/HistoryToggleOff';
 import { Chrome_Cache_Key, RecentSearchesType } from '../../types/common';
 import { useSmartSearchContext } from '../../provider/SmartSearchProvider';
 
-export const Suggestions: React.FC = () => {
+type ComponentProps = {
+  onSelect?: (index: number) => void;
+};
+
+export const Suggestions: React.FC<ComponentProps> = ({ onSelect }) => {
   // const [recentSearches] = React.useState<RecentSearchesType[]>();
   const { state } = useSmartSearchContext();
+  const [selectedIndex, setSelectedIndex] = React.useState<number | undefined>(undefined);
 
   // React.useEffect(() => {
   //   (async () => {
@@ -22,9 +27,10 @@ export const Suggestions: React.FC = () => {
   //   })();
   // }, [chrome.storage.local.onChanged]);
 
-  const handleClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, index: number) => {
-    console.log(event.target);
-  };
+  const handleClick = (_: React.MouseEvent<HTMLDivElement, MouseEvent>, index: number) => {
+    setSelectedIndex(index);
+    onSelect?.(index);
+  }
 
   const listIcon = (destType: string) => {
     switch (destType) {
@@ -44,6 +50,7 @@ export const Suggestions: React.FC = () => {
   const destinationSuggestions = state.destinationSuggestions.map((suggestion, index) => (
     <ListItemButton 
       key={`destination-suggestion-item-${index}`}
+      selected={selectedIndex === index}
       onClick={(event) => handleClick(event, index)}
     >
       <ListItemIcon>{listIcon(suggestion.destType)}</ListItemIcon>

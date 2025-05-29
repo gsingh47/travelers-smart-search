@@ -42,16 +42,16 @@ export const SmartSearch: React.FC = () => {
 
   const handleBackClick = () => {
     dispatch({ type: ActionType.SET_DESTINATION_SUGGESTIONS, payload: [] });
-    dispatch({ type: ActionType.SEARCH, payload: false });
+    dispatch({ type: ActionType.SEARCH, payload: { searchClicked: false } });
   }
 
   const handleOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
-  };
+  }
 
   const handleClose = async () => {
     setAnchorEl(null);
-  };
+  }
 
   const handleSearchClick = async () => {
     if (searchText) {
@@ -66,21 +66,24 @@ export const SmartSearch: React.FC = () => {
             type: ActionType.SET_DESTINATION_SUGGESTIONS,
             payload: destinationSuggestions
           });
-          dispatch({ type: ActionType.SEARCH, payload: true });
+          dispatch({ type: ActionType.SEARCH, payload: { searchClicked: true, searchText } });
           dispatch({ type: ActionType.FETCHING, payload: false });
         }
         // TODO: Handle unavailable suggestions case
-      }
-
-      // waitForElementToDisappear('#smart-search-popover').then((elementDisappeared) => {
-      //   if (elementDisappeared) {
-      //     runSearch(searchText);
-      //   } else {
-      //     console.error('Popover did not close in time'); // TODO: set error state
-      //   }
-      // });
+      } // TODO: Handle error case
     }
-  };
+  }
+
+  const handleDestinationSelect = (index: number) => {
+    setAnchorEl(null);
+    waitForElementToDisappear('#smart-search-popover').then((elementDisappeared) => {
+      if (elementDisappeared) {
+        runSearch(searchText, index);
+      } else {
+        console.error('Popover did not close in time'); // TODO: set error state
+      }
+    });
+  }
 
   return(
     <Stack sx={{ m: 2 }} direction={'row'} spacing={1}>
@@ -137,7 +140,7 @@ export const SmartSearch: React.FC = () => {
                 </Box>
               }
               {/* Suggestions */}
-              {showSuggestions && <Suggestions />}
+              {showSuggestions && <Suggestions onSelect={handleDestinationSelect} />}
             </Box>
             {/* Search button */}
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>

@@ -30,6 +30,7 @@ export type State = {
   searchClicked?: boolean;
   isFetching?: boolean;
   destinationSuggestions?: DestinationSuggestionsType[];
+  searchText?: string; // TODO: Remove this if not needed
 };
 
 export const initialState: State = {
@@ -73,7 +74,8 @@ export const reducer = (state: State, action: Actions) => {
     case ActionType.SEARCH:
       return {
         ...state,
-        searchClicked: action.payload
+        searchClicked: action.payload.searchClicked,
+        searchText: action.payload.searchText
       };
     case ActionType.FETCHING: 
       return {

@@ -74,7 +74,7 @@ export const VoiceSearchWrapper: React.FC = () => {
         }
 
         dispatch({ type: ActionType.FETCHING, payload: false });
-        dispatch({ type: ActionType.SEARCH, payload: false });
+        dispatch({ type: ActionType.SEARCH, payload: { searchClicked: false } });
       })();
     }
   }, [state.searchClicked]);
