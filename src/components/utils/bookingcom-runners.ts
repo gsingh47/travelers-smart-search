@@ -1,6 +1,7 @@
 const DESTINATION_INPUT_SELECTOR = '.b915b8dc0b';
 const DESTINATION_AUTO_COMPLETE_PARENT_SELECTOR = '.e03644d405';
 const DESTINATION_AUTO_COMPLETE_SELECTOR = '.e521bfa3f4';
+const DESTINATION_TRENDING_HEADER_SELECTOR = '.d72f1441bc';
 const SEARCH_BUTTON_SELECTOR = '.a7e79c28d6 button';
 
 const waitForElement = (selector: string) => {
@@ -43,8 +44,9 @@ export const runSearch = async (searchText: string, selectedDestIndex: number = 
   runDestinationSearch(searchText);
 
   const optionsParent = await waitForElement(DESTINATION_AUTO_COMPLETE_PARENT_SELECTOR) as HTMLElement;
+  const trendingHeaderDissapeared = await waitForElementToDisappear(DESTINATION_TRENDING_HEADER_SELECTOR);
 
-  if (optionsParent) {
+  if (optionsParent && trendingHeaderDissapeared) {
     const autoCompleteOptions = optionsParent.querySelectorAll(DESTINATION_AUTO_COMPLETE_SELECTOR) as NodeListOf<HTMLDivElement>;
 
     if (autoCompleteOptions && autoCompleteOptions.length > 0) {

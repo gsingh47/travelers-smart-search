@@ -2,7 +2,7 @@ import React from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Box, Card, CardContent, CardHeader, Fab, IconButton, LinearProgress, Popover, Stack, TextField, Typography } from '@mui/material';
+import { Box, Card, CardContent, CardHeader, Divider, Fab, IconButton, LinearProgress, Popover, Stack, TextField, Typography } from '@mui/material';
 import { useSmartSearchContext } from '../provider/SmartSearchProvider';
 import { Suggestions } from './suggestions/Suggestions';
 import { SearchTools } from './search-tools/SearchTools';
@@ -11,8 +11,10 @@ import { Chrome_Cache_Key, RECENT_SEARCHES_LIMIT, RecentSearchesType } from '../
 import { SearchTypes } from './search-types/SearchTypes';
 import { runSearch, waitForElementToDisappear } from './utils/bookingcom-runners';
 import { getSearchCriteria } from '../utils/get-data-helper';
+import { SearchType } from '../constants/constants';
 
-const DEFAULT_INPUT_PLACEHOLDER = 'E.g. Search hotels in new york.';
+const HOTELS_INPUT_PLACEHOLDER = 'E.g. Search hotels in new york.';
+const FLIGHTS_INPUT_PLACEHOLDER = 'E.g. Search flights from LA to new york.';
 const DEFAULT_INPUT_LABEL = 'Prompt';
 
 
@@ -59,14 +61,14 @@ export const SmartSearch: React.FC = () => {
       const resp = await getSearchCriteria(searchText);
       
       if (resp && resp.success) {
-        const { destinationSuggestions } = resp.results;
+        const { destinationSuggestions, destinationName } = resp.results;
 
         if (destinationSuggestions && destinationSuggestions.length) {
           dispatch({
             type: ActionType.SET_DESTINATION_SUGGESTIONS,
             payload: destinationSuggestions
           });
-          dispatch({ type: ActionType.SEARCH, payload: { searchClicked: true, searchText } });
+          dispatch({ type: ActionType.SEARCH, payload: { searchClicked: true, searchText: destinationName } });
           dispatch({ type: ActionType.FETCHING, payload: false });
         }
         // TODO: Handle unavailable suggestions case
@@ -78,7 +80,7 @@ export const SmartSearch: React.FC = () => {
     setAnchorEl(null);
     waitForElementToDisappear('#smart-search-popover').then((elementDisappeared) => {
       if (elementDisappeared) {
-        runSearch(searchText, index);
+        runSearch(state.searchText, index);
       } else {
         console.error('Popover did not close in time'); // TODO: set error state
       }
@@ -128,7 +130,7 @@ export const SmartSearch: React.FC = () => {
                     label={DEFAULT_INPUT_LABEL} 
                     variant="filled" 
                     rows={5} 
-                    placeholder={DEFAULT_INPUT_PLACEHOLDER}
+                    placeholder={state.searchType === SearchType.HOTELS ? HOTELS_INPUT_PLACEHOLDER : FLIGHTS_INPUT_PLACEHOLDER}
                     fullWidth
                     multiline
                     value={searchText}
@@ -142,11 +144,15 @@ export const SmartSearch: React.FC = () => {
               {/* Suggestions */}
               {showSuggestions && <Suggestions onSelect={handleDestinationSelect} />}
             </Box>
+            <Divider />
             {/* Search button */}
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-              <Fab onClick={handleSearchClick} size='medium' color={'primary'} variant='extended'>
-                <Typography sx={{ textTransform: 'none' }} noWrap>Search</Typography>
-              </Fab>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
+              {showSuggestions ?
+                <Typography variant="caption" color='secondary' noWrap>For more precise results select the destination.</Typography> : 
+                <Fab onClick={handleSearchClick} size='medium' color={'primary'} variant='extended'>
+                  <Typography sx={{ textTransform: 'none' }} noWrap>Search</Typography>
+                </Fab>
+              }
             </Box>
           </CardContent>
         </Card>

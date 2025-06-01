@@ -1,3 +1,4 @@
+import { SearchType } from "../constants/constants";
 import { MAX_ATTEMPTS } from "../types/common";
 import { Transcript, RecorderStatus } from "../utils/speech-to-text";
 import { Actions, ActionType } from "./actions";
@@ -31,10 +32,12 @@ export type State = {
   isFetching?: boolean;
   destinationSuggestions?: DestinationSuggestionsType[];
   searchText?: string; // TODO: Remove this if not needed
+  searchType: string;
 };
 
 export const initialState: State = {
-  isReady: false
+  isReady: false,
+  searchType: SearchType.HOTELS
 };
 
 export const reducer = (state: State, action: Actions) => {
@@ -76,6 +79,11 @@ export const reducer = (state: State, action: Actions) => {
         ...state,
         searchClicked: action.payload.searchClicked,
         searchText: action.payload.searchText
+      };
+    case ActionType.SEARCH_TYPE_CHANGE:
+      return {
+        ...state,
+        searchType: action.payload
       };
     case ActionType.FETCHING: 
       return {
